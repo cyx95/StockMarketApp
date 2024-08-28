@@ -1,6 +1,18 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
+    id("kotlin-kapt")
+}
+
+kotlin {
+    sourceSets {
+        debug {
+            kotlin.srcDir("build/generated/ksp/debug/kotlin")
+        }
+        release {
+            kotlin.srcDir("build/generated/ksp/release/kotlin")
+        }
+    }
 }
 
 android {
@@ -72,6 +84,9 @@ dependencies {
 
     // Room
     implementation(libs.room)
+
+    implementation(libs.dagger)
+
 
     // ViewModel
 //    implementation(libs.androidx.lifecycle.viewmodel.compose)
