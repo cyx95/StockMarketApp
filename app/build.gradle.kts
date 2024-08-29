@@ -66,6 +66,7 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
+    implementation (libs.androidx.material)
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
@@ -85,9 +86,22 @@ dependencies {
     // Room
     implementation(libs.room)
 
+    // Dagger/Hilt
     implementation(libs.dagger)
+    implementation(libs.androidx.hilt.lifecycle.viewmodel)
+    implementation(libs.androidx.hilt.navigation.compose)
 
+    // Opencsv
     implementation(libs.opencsv)
+
+    // Compose dependencies
+    implementation (libs.androidx.lifecycle.viewmodel.compose)
+    implementation (libs.androidx.material.icons.extended)
+    implementation( libs.androidx.activity.compose.v160alpha01)
+    implementation (libs.accompanist.swiperefresh)
+
+    // Compose Nav Destinations
+    implementation (libs.core)
 
 
     // ViewModel
