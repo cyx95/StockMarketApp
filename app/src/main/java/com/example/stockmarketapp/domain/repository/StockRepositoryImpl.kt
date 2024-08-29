@@ -1,7 +1,9 @@
 package com.example.stockmarketapp.domain.repository
 
+import com.example.stockmarketapp.data.csv.CompanyListingsParser
 import com.example.stockmarketapp.data.local.StockDatabase
 import com.example.stockmarketapp.data.mapper.toCompanyListing
+import com.example.stockmarketapp.data.mapper.toCompanyListingEntity
 import com.example.stockmarketapp.data.remote.StockApi
 import com.example.stockmarketapp.domain.model.CompanyListing
 import com.example.stockmarketapp.ui.util.Resource
@@ -16,7 +18,8 @@ import javax.inject.Singleton
 class StockRepositoryImpl @Inject constructor(
     val api: StockApi,
     val db: StockDatabase,
-): StockRepository {
+    val companyListingParser: CompanyListingsParser
+) : StockRepository {
 
     private val dao = db.dao
 
@@ -33,19 +36,35 @@ class StockRepositoryImpl @Inject constructor(
 
             val isDbEmpty = localListings.isEmpty() && query.isBlank()
             val shouldJustLoadFromCache = !isDbEmpty && !fetchFromRemote
-            if(shouldJustLoadFromCache) {
+            if (shouldJustLoadFromCache) {
                 emit(Resource.Loading(isLoading = false))
                 return@flow
             }
 
             val remoteListings = try {
                 val response = api.getListings()
-            } catch(e: IOException) {
+                companyListingParser.parse(response.byteStream())
+            } catch (e: IOException) {
                 e.printStackTrace()
                 emit(Resource.Error("Couldn't load data"))
+                null
             } catch (e: HttpException) {
                 e.printStackTrace()
                 emit(Resource.Error("Couldn't load data"))
+                null
+            }
+
+            remoteListings?.let { listings ->
+                dao.clearCompanyListings()
+                dao.insertCompanyListings(
+                    listings.map { it.toCompanyListingEntity() }
+                )
+                emit(
+                    Resource.Success(
+                        data = dao.searchCompanyListing("").map { it.toCompanyListing() })
+                )
+                emit(Resource.Loading(false))
+
             }
         }
     }
