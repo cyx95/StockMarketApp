@@ -87,6 +87,8 @@ dependencies {
 
     implementation(libs.dagger)
 
+    implementation(libs.opencsv)
+
 
     // ViewModel
 //    implementation(libs.androidx.lifecycle.viewmodel.compose)
